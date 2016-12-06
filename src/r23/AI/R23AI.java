@@ -43,12 +43,12 @@ public class R23AI implements BattleshipsPlayer {
             Position pos;
             if (vertical) {
                 int x = rnd.nextInt(sizeX);
-                int y = rnd.nextInt(sizeY - (s.size() - 1));
+                int y = rnd.nextInt(sizeY - (s.size()));
 
                 while (true) {
                     int counter = 0;
-                    if (counter > 2) {
-                        y = rnd.nextInt(sizeY - (s.size() - 1));
+                    if (counter > 1) {
+                        y = rnd.nextInt(sizeY - (s.size()));
                     }
                     boolean check = false;
                     for (int j = 0; j < s.size(); j++) {
@@ -74,7 +74,7 @@ public class R23AI implements BattleshipsPlayer {
                 int y = rnd.nextInt(sizeY);
                 while (true) {
                     int counter = 0;
-                    if (counter > 2) {
+                    if (counter > 1) {
                         x = rnd.nextInt(sizeX - (s.size() - 1));
                     }
                     boolean check = false;
