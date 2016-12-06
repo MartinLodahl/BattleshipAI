@@ -27,7 +27,7 @@ public class R23AI implements BattleshipsPlayer {
 
     private boolean[][] foundPosition;
     private boolean[][] alreadyShot;
-    private Position lastShot;
+    private Position firstHit;
     private Position secondHit;
     private boolean hit;
     private boolean hunt;
@@ -141,19 +141,32 @@ public class R23AI implements BattleshipsPlayer {
 
     @Override
     public Position getFireCoordinates(Fleet enemyShips) {
-        if (hit && this.numberOfShips==this.numberOfShipsLastTurn){
+        if (hit && this.numberOfShips == this.numberOfShipsLastTurn) {
             hunt = true;
-            if(!alreadyShot[lastShot.x][lastShot.y+1])
-            {
-                Position shot = new Position(lastShot.x, lastShot.y+1);
+            if (secondHit != null){
+                secondHit.compareTo(firstHit);
+            } else if (!alreadyShot[firstHit.x][firstHit.y + 1]) {
+                Position shot = new Position(firstHit.x, firstHit.y + 1);
+                this.secondHit = shot;
+                return shot;
+            } else if (!alreadyShot[firstHit.x][firstHit.y - 1]) {
+                Position shot = new Position(firstHit.x, firstHit.y - 1);
+                this.secondHit = shot;
+                return shot;
+            }else if (!alreadyShot[firstHit.x+1][firstHit.y]) {
+                Position shot = new Position(firstHit.x+1, firstHit.y);
+                this.secondHit = shot;
+                return shot;
+            }else if (!alreadyShot[firstHit.x-1][firstHit.y]) {
+                Position shot = new Position(firstHit.x-1, firstHit.y);
+                this.secondHit = shot;
                 return shot;
             }
-        } else if (hit && this.numberOfShips<this.numberOfShipsLastTurn)
-        {
-         hunt = false;
-            
-        } else if (hunt){
-            
+        } else if (hit && this.numberOfShips < this.numberOfShipsLastTurn) {
+            hunt = false;
+
+        } else if (hunt) {
+
         }
         Position shot = new Position(nextX, nextY);
         ++nextX;
@@ -164,8 +177,8 @@ public class R23AI implements BattleshipsPlayer {
                 nextY = 0;
             }
         }
-        
-        lastShot = shot;
+
+        firstHit = shot;
         this.numberOfShipsLastTurn = this.numberOfShips;
         this.alreadyShot[shot.x][shot.y] = true;
         return shot;

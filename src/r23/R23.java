@@ -15,6 +15,8 @@ import tournament.player.PlayerFactory;
  */
 public class R23 implements PlayerFactory<BattleshipsPlayer>
 {
+    public static void main(String[] args) {
+    }
 
     @Override
     public BattleshipsPlayer getNewInstance() {
