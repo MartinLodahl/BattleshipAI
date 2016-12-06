@@ -237,19 +237,28 @@ public class R23AI implements BattleshipsPlayer {
                 }
             }
         }
+        Position shot = shoot();
+
+        firstHit = shot;
+        this.numberOfShipsLastTurn = this.numberOfShips;
+        this.alreadyShot[shot.x][shot.y] = true;
+        return shot;
+    }
+    
+    private Position shoot(){
+        
         Position shot = new Position(nextX, nextY);
-        ++nextX;
+        nextX+=2;
         if (nextX >= sizeX) {
             nextX = 0;
             ++nextY;
             if (nextY >= sizeY) {
                 nextY = 0;
             }
+            if (alreadyShot[nextX][nextY]){
+             shoot();   
+            }
         }
-
-        firstHit = shot;
-        this.numberOfShipsLastTurn = this.numberOfShips;
-        this.alreadyShot[shot.x][shot.y] = true;
         return shot;
     }
 
