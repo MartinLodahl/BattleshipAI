@@ -11,7 +11,7 @@ import tournament.player.PlayerFactory;
 
 /**
  *
- * @author MartinLodahl
+ * @author Xu
  */
 public class R23 implements PlayerFactory<BattleshipsPlayer>
 {
