@@ -25,7 +25,15 @@ public class R23AI implements BattleshipsPlayer {
     private int nextX;
     private int nextY;
 
-    boolean[][] foundPosition;
+    private boolean[][] foundPosition;
+    private boolean[][] alreadyShot;
+    private Position lastShot;
+    private Position secondHit;
+    private boolean hit;
+    private boolean hunt;
+    private int shortestShip;
+    private int numberOfShipsLastTurn;
+    private int numberOfShips;
 
     public R23AI() {
 
@@ -133,6 +141,20 @@ public class R23AI implements BattleshipsPlayer {
 
     @Override
     public Position getFireCoordinates(Fleet enemyShips) {
+        if (hit && this.numberOfShips==this.numberOfShipsLastTurn){
+            hunt = true;
+            if(!alreadyShot[lastShot.x][lastShot.y+1])
+            {
+                Position shot = new Position(lastShot.x, lastShot.y+1);
+                return shot;
+            }
+        } else if (hit && this.numberOfShips<this.numberOfShipsLastTurn)
+        {
+         hunt = false;
+            
+        } else if (hunt){
+            
+        }
         Position shot = new Position(nextX, nextY);
         ++nextX;
         if (nextX >= sizeX) {
@@ -142,12 +164,18 @@ public class R23AI implements BattleshipsPlayer {
                 nextY = 0;
             }
         }
+        
+        lastShot = shot;
+        this.numberOfShipsLastTurn = this.numberOfShips;
+        this.alreadyShot[shot.x][shot.y] = true;
         return shot;
     }
 
     @Override
     public void hitFeedBack(boolean hit, Fleet enemyShips) {
-        //Do nothing
+        this.shortestShip = enemyShips.getShip(0).size();
+        this.numberOfShips = enemyShips.getNumberOfShips();
+        this.hit = hit;
     }
 
     @Override
