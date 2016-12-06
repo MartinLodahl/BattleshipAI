@@ -36,8 +36,6 @@ public class R23AI implements BattleshipsPlayer {
 
         nextX = 0;
         nextY = 0;
-        sizeX = board.sizeX();
-        sizeY = board.sizeY();
         foundPosition = new boolean[sizeX][sizeY];
         for (int i = fleet.getNumberOfShips()-1; i >= 0; i--) {
             Ship s = fleet.getShip(i);
@@ -129,7 +127,8 @@ public class R23AI implements BattleshipsPlayer {
 
     @Override
     public void startMatch(int rounds, Fleet ships, int sizeX, int sizeY) {
-        //Do nothing...
+        this.sizeX = sizeX;
+        this.sizeY = sizeY;
     }
 
     @Override
