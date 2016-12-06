@@ -39,7 +39,7 @@ public class R23AI implements BattleshipsPlayer {
         sizeX = board.sizeX();
         sizeY = board.sizeY();
         foundPosition = new boolean[sizeX][sizeY];
-        for (int i = fleet.getNumberOfShips()-1; i < fleet.getNumberOfShips(); i--) {
+        for (int i = fleet.getNumberOfShips()-1; i >= 0; i--) {
             Ship s = fleet.getShip(i);
             boolean vertical = rnd.nextBoolean();
             Position pos;
