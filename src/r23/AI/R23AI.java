@@ -28,7 +28,7 @@ public class R23AI implements BattleshipsPlayer {
     boolean[][] foundPosition;
 
     public R23AI() {
-        
+
     }
 
     @Override
@@ -37,7 +37,7 @@ public class R23AI implements BattleshipsPlayer {
         nextX = 0;
         nextY = 0;
         foundPosition = new boolean[sizeX][sizeY];
-        for (int i = fleet.getNumberOfShips()-1; i >= 0; i--) {
+        for (int i = fleet.getNumberOfShips() - 1; i >= 0; i--) {
             Ship s = fleet.getShip(i);
             boolean vertical = rnd.nextBoolean();
             Position pos;
@@ -46,7 +46,19 @@ public class R23AI implements BattleshipsPlayer {
                 int y = rnd.nextInt(sizeY - (s.size()));
 
                 while (true) {
-                    int counter = 0;
+                    boolean check = false;
+                    for (int j = 0; j < s.size(); j++) {
+                        if (foundPosition[x][y + j]) {
+                            check = true;
+                            x = rnd.nextInt(sizeX);
+                            y = rnd.nextInt(sizeY - (s.size()));
+                            break;
+                        }
+                    }
+                    if (check == false) {
+                        break;
+                    }
+                    /*   int counter = 0;
                     if (counter > 1) {
                         y = rnd.nextInt(sizeY - (s.size()));
                     }
@@ -64,6 +76,7 @@ public class R23AI implements BattleshipsPlayer {
                         break;
                     }
                     counter++;
+                }*/
                 }
                 for (int j = 0; j < s.size(); j++) {
                     foundPosition[x][y + j] = true;
@@ -73,7 +86,18 @@ public class R23AI implements BattleshipsPlayer {
                 int x = rnd.nextInt(sizeX - (s.size() - 1));
                 int y = rnd.nextInt(sizeY);
                 while (true) {
-                    int counter = 0;
+                    boolean check = false;
+                    for (int j = 0; j < s.size(); j++) {
+                        if (foundPosition[x + j][y]) {
+                            check = true;
+                            x = rnd.nextInt(sizeX - (s.size() - 1));
+                            y = rnd.nextInt(sizeY);
+                        }
+                    }
+                    if (check == false) {
+                        break;
+                    }
+                    /*int counter = 0;
                     if (counter > 1) {
                         x = rnd.nextInt(sizeX - (s.size() - 1));
                     }
@@ -91,6 +115,7 @@ public class R23AI implements BattleshipsPlayer {
                         break;
                     }
                     counter++;
+                }*/
                 }
                 for (int j = 0; j < s.size(); j++) {
                     foundPosition[x + j][y] = true;
