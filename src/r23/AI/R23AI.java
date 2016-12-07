@@ -24,8 +24,6 @@ public class R23AI implements BattleshipsPlayer {
 
     private int nextX;
     private int nextY;
-    
-    private Position shot;
 
     private boolean[][] foundPosition;
     private boolean[][] alreadyShot;
@@ -43,8 +41,9 @@ public class R23AI implements BattleshipsPlayer {
 
     @Override
     public void placeShips(Fleet fleet, Board board) {
-
-       
+//
+//        sizeX = board.sizeX();
+//        sizeY = board.sizeY();
         foundPosition = new boolean[sizeX][sizeY];
         for (int i = fleet.getNumberOfShips() - 1; i >= 0; i--) {
             Ship s = fleet.getShip(i);
@@ -142,7 +141,7 @@ public class R23AI implements BattleshipsPlayer {
 
     @Override
     public Position getFireCoordinates(Fleet enemyShips) {
-       /* if (hit && this.numberOfShips == this.numberOfShipsLastTurn) {
+        /* if (hit && this.numberOfShips == this.numberOfShipsLastTurn) {
             hunt = true;
             if (secondHit != null) {
                 if (secondHit.y == firstHit.y) {
@@ -204,8 +203,8 @@ public class R23AI implements BattleshipsPlayer {
         } else if (hit && this.numberOfShips < this.numberOfShipsLastTurn) {
             hunt = false;
             secondHit = null;
-        } else if (hunt && firstHit.compareTo(secondHit)>1) {
-            if (secondHit != null) {
+        } else if (hunt ) {
+            if (secondHit != null && firstHit.compareTo(secondHit)>1) {
                 if (secondHit.y == firstHit.y) {
                     int xShot;
                     Position shot;
@@ -241,35 +240,81 @@ public class R23AI implements BattleshipsPlayer {
             }
             
         }*/
-        shoot();
+        if (hit || hunt){
+            Position shot = shootAround();
+            Position negativeShot = new Position(-1,-1);
+            if (shot.compareTo(negativeShot)!=0){
+                System.out.println(shot);
+            return shot;    
+            }
+        }
+
+        Position shot = shoot();
 
         firstHit = shot;
         this.numberOfShipsLastTurn = this.numberOfShips;
-        this.alreadyShot[shot.x][shot.y] = true;
+
         return shot;
     }
 
-    private void shoot() {
+     private Position shootAround() {
+        if (firstHit.x+1<sizeX && !alreadyShot[firstHit.x+1][firstHit.y]){
+            hunt = true;
+            this.alreadyShot[firstHit.x+1][firstHit.y] = true;
+            Position shot = new Position(firstHit.x+1, firstHit.y);
+            return shot;
+        }else if(firstHit.x-1>=0 &&!alreadyShot[firstHit.x-1][firstHit.y] ){
+            hunt = true;
+            this.alreadyShot[firstHit.x-1][firstHit.y] = true;
+            Position shot = new Position(firstHit.x-1, firstHit.y);
+            return shot;
+        }else if(firstHit.y+1<sizeY && !alreadyShot[firstHit.x][firstHit.y+1]) {
+            hunt = true;
+            this.alreadyShot[firstHit.x][firstHit.y+1] = true;
+            Position shot = new Position(firstHit.x, firstHit.y+1);
+            return shot;
+        } else if(firstHit.y-1>=0 && !alreadyShot[firstHit.x][firstHit.y-1]) {
+            hunt = true;
+            this.alreadyShot[firstHit.x][firstHit.y-1] = true;
+            Position shot = new Position(firstHit.x, firstHit.y-1);
+            return shot;
+        } 
+            hunt = false;
+            return new Position(-1,-1);
+    }
+    
+    private Position shoot() {
 
-        shot = new Position(nextX, nextY);
-        ++nextX;
+        System.out.println("next x: " + nextX);
+        
+        nextX+=2;
         if (nextX >= sizeX) {
+            if (nextY%2 == 0){
             nextX = 0;
+            } else{
+                nextX = 1;
+            }
             ++nextY;
             if (nextY >= sizeY) {
                 nextY = 0;
             }
         }
-        if (alreadyShot[shot.x][shot.y]) {
-                shoot();
-            }
+        if (alreadyShot[nextX][nextY]) {
+            shoot();
+        }
+        System.out.println("Next X : " + nextX);
+        System.out.println("Next Y: "+ nextY);
+        this.alreadyShot[nextX][nextY] = true;
+        Position shot = new Position(nextX, nextY);
+        System.out.println(shot);
+        return shot;
     }
 
     @Override
     public void hitFeedBack(boolean hit, Fleet enemyShips) {
 //        this.shortestShip = enemyShips.getShip(0).size();
-//        this.numberOfShips = enemyShips.getNumberOfShips();
-//        this.hit = hit;
+       // this.numberOfShips = enemyShips.getNumberOfShips();
+        this.hit = hit;
     }
 
     @Override
@@ -280,7 +325,7 @@ public class R23AI implements BattleshipsPlayer {
 
     @Override
     public void startRound(int round) {
-        //Do nothing
+        alreadyShot = new boolean[sizeX][sizeY];
     }
 
     @Override
