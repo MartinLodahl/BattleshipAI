@@ -24,6 +24,8 @@ public class R23AI implements BattleshipsPlayer {
 
     private int nextX;
     private int nextY;
+    
+    private Position shot;
 
     private boolean[][] foundPosition;
     private boolean[][] alreadyShot;
@@ -42,8 +44,7 @@ public class R23AI implements BattleshipsPlayer {
     @Override
     public void placeShips(Fleet fleet, Board board) {
 
-        nextX = 0;
-        nextY = 0;
+       
         foundPosition = new boolean[sizeX][sizeY];
         for (int i = fleet.getNumberOfShips() - 1; i >= 0; i--) {
             Ship s = fleet.getShip(i);
@@ -91,14 +92,14 @@ public class R23AI implements BattleshipsPlayer {
                 }
                 pos = new Position(x, y);
             } else {
-                int x = rnd.nextInt(sizeX - (s.size() - 1));
+                int x = rnd.nextInt(sizeX - (s.size()));
                 int y = rnd.nextInt(sizeY);
                 while (true) {
                     boolean check = false;
                     for (int j = 0; j < s.size(); j++) {
                         if (foundPosition[x + j][y]) {
                             check = true;
-                            x = rnd.nextInt(sizeX - (s.size() - 1));
+                            x = rnd.nextInt(sizeX - (s.size()));
                             y = rnd.nextInt(sizeY);
                         }
                     }
@@ -141,7 +142,7 @@ public class R23AI implements BattleshipsPlayer {
 
     @Override
     public Position getFireCoordinates(Fleet enemyShips) {
-        if (hit && this.numberOfShips == this.numberOfShipsLastTurn) {
+       /* if (hit && this.numberOfShips == this.numberOfShipsLastTurn) {
             hunt = true;
             if (secondHit != null) {
                 if (secondHit.y == firstHit.y) {
@@ -203,7 +204,7 @@ public class R23AI implements BattleshipsPlayer {
         } else if (hit && this.numberOfShips < this.numberOfShipsLastTurn) {
             hunt = false;
             secondHit = null;
-        } else if (hunt) {
+        } else if (hunt && firstHit.compareTo(secondHit)>1) {
             if (secondHit != null) {
                 if (secondHit.y == firstHit.y) {
                     int xShot;
@@ -235,63 +236,60 @@ public class R23AI implements BattleshipsPlayer {
                     secondHit = shot;
                     return shot;
                 }
+            } else {
+                
             }
-        }
-        Position shot = shoot();
+            
+        }*/
+        shoot();
 
         firstHit = shot;
         this.numberOfShipsLastTurn = this.numberOfShips;
         this.alreadyShot[shot.x][shot.y] = true;
         return shot;
     }
-    
-    private Position shoot(){
-        
-        Position shot = new Position(nextX, nextY);
-        nextX+=2;
+
+    private void shoot() {
+
+        shot = new Position(nextX, nextY);
+        ++nextX;
         if (nextX >= sizeX) {
             nextX = 0;
             ++nextY;
             if (nextY >= sizeY) {
                 nextY = 0;
             }
-            if (alreadyShot[nextX][nextY]){
-             shoot();   
-            }
         }
-        return shot;
+        if (alreadyShot[shot.x][shot.y]) {
+                shoot();
+            }
     }
 
     @Override
-    public void hitFeedBack(boolean hit, Fleet enemyShips
-    ) {
-        this.shortestShip = enemyShips.getShip(0).size();
-        this.numberOfShips = enemyShips.getNumberOfShips();
-        this.hit = hit;
+    public void hitFeedBack(boolean hit, Fleet enemyShips) {
+//        this.shortestShip = enemyShips.getShip(0).size();
+//        this.numberOfShips = enemyShips.getNumberOfShips();
+//        this.hit = hit;
     }
 
     @Override
-    public void startMatch(int rounds, Fleet ships, int sizeX, int sizeY
-    ) {
+    public void startMatch(int rounds, Fleet ships, int sizeX, int sizeY) {
         this.sizeX = sizeX;
         this.sizeY = sizeY;
     }
 
     @Override
-    public void startRound(int round
-    ) {
+    public void startRound(int round) {
         //Do nothing
     }
 
     @Override
-    public void endRound(int round, int points, int enemyPoints
-    ) {
+    public void endRound(int round, int points, int enemyPoints) {
         //Do nothing
     }
 
     @Override
-    public void endMatch(int won, int lost, int draw
-    ) {
+    public void endMatch(int won, int lost, int draw) {
         //Do nothing
     }
 }
