@@ -245,7 +245,6 @@ public class R23AI implements BattleshipsPlayer {
             Position shot = shootAround();
             Position negativeShot = new Position(-1,-1);
             if (shot.compareTo(negativeShot)!=0){
-                System.out.println(shot);
             return shot;    
             }
         }
@@ -275,30 +274,42 @@ public class R23AI implements BattleshipsPlayer {
             this.alreadyShot[firstHit.x][firstHit.y-1] = true;
             Position shot = new Position(firstHit.x, firstHit.y-1);
             return shot;
-        } 
+        }   
             hunt = false;
             return new Position(-1,-1);
     }
     
     private Position shoot() {
-
-        System.out.println("next x: " + nextX);
         
-        nextX+=2;
-        if (nextX >= sizeX) {
-            if (nextY%2 == 0){
-            nextX = 0;
-            } else{
-                nextX = 1;
-            }
-            ++nextY;
-            if (nextY >= sizeY) {
-                nextY = 0;
-            }
+        
+        if (whichRow){
+        
+        nextY = rnd.nextInt(sizeY);
+        if (nextY %2==0){
+        nextX = rnd.nextInt(sizeX/2) *2;
+            
+        } else {
+        nextX = rnd.nextInt(sizeX/2) *2+1;  
+            
+        }  
+        } 
+        else {
+        nextY = rnd.nextInt(sizeY);
+        if (nextY %2==0){
+        nextX = rnd.nextInt(sizeX/2) *2+1;
+            
+        } else {
+        nextX = rnd.nextInt(sizeX/2) *2;
+            
         }
+        }
+            
+        
         if (alreadyShot[nextX][nextY]) {
             shoot();
         }
+        
+        
         this.alreadyShot[nextX][nextY] = true;
         Position shot = new Position(nextX, nextY);
         return shot;
@@ -321,8 +332,15 @@ public class R23AI implements BattleshipsPlayer {
 
     @Override
     public void startRound(int round) {
-        alreadyShot = new boolean[sizeX][sizeY];
-        
+        alreadyShot = new boolean[sizeX][sizeY];    
+        hunt = false;
+        int whichRowInt = rnd.nextInt(1);
+        rnd.nextInt(2);
+        if (whichRowInt == 1){
+            whichRow = true;
+        } else {
+            whichRow = false;
+        }
     }
 
     @Override
