@@ -260,22 +260,18 @@ public class R23AI implements BattleshipsPlayer {
 
      private Position shootAround() {
         if (firstHit.x+1<sizeX && !alreadyShot[firstHit.x+1][firstHit.y]){
-            hunt = true;
             this.alreadyShot[firstHit.x+1][firstHit.y] = true;
             Position shot = new Position(firstHit.x+1, firstHit.y);
             return shot;
         }else if(firstHit.x-1>=0 &&!alreadyShot[firstHit.x-1][firstHit.y] ){
-            hunt = true;
             this.alreadyShot[firstHit.x-1][firstHit.y] = true;
             Position shot = new Position(firstHit.x-1, firstHit.y);
             return shot;
         }else if(firstHit.y+1<sizeY && !alreadyShot[firstHit.x][firstHit.y+1]) {
-            hunt = true;
             this.alreadyShot[firstHit.x][firstHit.y+1] = true;
             Position shot = new Position(firstHit.x, firstHit.y+1);
             return shot;
         } else if(firstHit.y-1>=0 && !alreadyShot[firstHit.x][firstHit.y-1]) {
-            hunt = true;
             this.alreadyShot[firstHit.x][firstHit.y-1] = true;
             Position shot = new Position(firstHit.x, firstHit.y-1);
             return shot;
@@ -312,7 +308,9 @@ public class R23AI implements BattleshipsPlayer {
     public void hitFeedBack(boolean hit, Fleet enemyShips) {
 //        this.shortestShip = enemyShips.getShip(0).size();
        // this.numberOfShips = enemyShips.getNumberOfShips();
-        this.hunt = hit;
+        if (hit){
+            this.hunt = hit;
+        }
     }
 
     @Override
