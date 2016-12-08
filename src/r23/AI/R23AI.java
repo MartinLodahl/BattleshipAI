@@ -24,6 +24,7 @@ public class R23AI implements BattleshipsPlayer {
 
     private int nextX;
     private int nextY;
+    private boolean whichRow;
 
     private boolean[][] foundPosition;
     private boolean[][] alreadyShot;
@@ -240,7 +241,7 @@ public class R23AI implements BattleshipsPlayer {
             }
             
         }*/
-        if (hit || hunt){
+        if (hunt){
             Position shot = shootAround();
             Position negativeShot = new Position(-1,-1);
             if (shot.compareTo(negativeShot)!=0){
@@ -302,11 +303,8 @@ public class R23AI implements BattleshipsPlayer {
         if (alreadyShot[nextX][nextY]) {
             shoot();
         }
-        System.out.println("Next X : " + nextX);
-        System.out.println("Next Y: "+ nextY);
         this.alreadyShot[nextX][nextY] = true;
         Position shot = new Position(nextX, nextY);
-        System.out.println(shot);
         return shot;
     }
 
@@ -314,7 +312,7 @@ public class R23AI implements BattleshipsPlayer {
     public void hitFeedBack(boolean hit, Fleet enemyShips) {
 //        this.shortestShip = enemyShips.getShip(0).size();
        // this.numberOfShips = enemyShips.getNumberOfShips();
-        this.hit = hit;
+        this.hunt = hit;
     }
 
     @Override
@@ -326,6 +324,7 @@ public class R23AI implements BattleshipsPlayer {
     @Override
     public void startRound(int round) {
         alreadyShot = new boolean[sizeX][sizeY];
+        
     }
 
     @Override
