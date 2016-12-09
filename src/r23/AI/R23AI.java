@@ -30,6 +30,8 @@ public class R23AI implements BattleshipsPlayer {
     private boolean[][] alreadyShot;
     private Position firstHit;
     private Position secondHit;
+    private Position thirdHit;
+    private Position fourthHit;
     private boolean hit;
     private boolean hunt;
     private int shortestShip;
@@ -42,12 +44,15 @@ public class R23AI implements BattleshipsPlayer {
 
     @Override
     public void placeShips(Fleet fleet, Board board) {
-//
-//        sizeX = board.sizeX();
-//        sizeY = board.sizeY();
+        
         foundPosition = new boolean[sizeX][sizeY];
+        //fleet.getNumbeOfShips retunerer antal af skiber, altså 5
+        
         for (int i = fleet.getNumberOfShips() - 1; i >= 0; i--) {
+            
+            // fleet.getship(1) returnerer skibenes info
             Ship s = fleet.getShip(i);
+            
             boolean vertical = rnd.nextBoolean();
             Position pos;
             if (vertical) {
@@ -142,12 +147,12 @@ public class R23AI implements BattleshipsPlayer {
 
     @Override
     public Position getFireCoordinates(Fleet enemyShips) {
-        
-        if (hunt){
+
+        if (hunt) {
             Position shot = huntShip();
-            Position negativeShot = new Position(-1,-1);
-            if (shot.compareTo(negativeShot)!=0){
-            return shot;    
+            Position negativeShot = new Position(-1, -1);
+            if (shot.compareTo(negativeShot) != 0) {
+                return shot;
             }
         }
 
@@ -159,11 +164,69 @@ public class R23AI implements BattleshipsPlayer {
         return shot;
     }
 
-     private Position huntShip() {
-         
-         /* if (hit && this.numberOfShips == this.numberOfShipsLastTurn) {
-            hunt = true;
-            if (secondHit != null) {
+    private Position huntShip() {
+
+        if (hit && this.numberOfShips == this.numberOfShipsLastTurn) {
+            if (fourthHit != null) {
+                if (fourthHit.y == firstHit.y) {
+                    int xShot;
+                    Position shot;
+                    int xDifference = firstHit.compareTo(fourthHit);
+                    System.out.println(xDifference);
+                    if (xDifference < 0) {
+                        xShot = fourthHit.x + 1;
+                        shot = new Position(xShot, fourthHit.y);
+                    } else {
+                        xShot = fourthHit.x - 1;
+                        shot = new Position(xShot, fourthHit.y);
+                    }
+                    fourthHit = shot;
+                    return shot;
+
+                } else {
+                    int yShot;
+                    Position shot;
+                    int yDifference = firstHit.compareTo(thirdHit);
+                    if (yDifference < 0) {
+                        yShot = fourthHit.y + 1;
+                        shot = new Position(fourthHit.x, yShot);
+                    } else {
+                        yShot = fourthHit.y - 1;
+                        shot = new Position(fourthHit.x, yShot);
+                    }
+                    thirdHit = shot;
+                    return shot;
+                }
+            } else if (thirdHit != null) {
+                if (thirdHit.y == firstHit.y) {
+                    int xShot;
+                    Position shot;
+                    int xDifference = firstHit.compareTo(thirdHit);
+                    if (xDifference < 0) {
+                        xShot = thirdHit.x + 1;
+                        shot = new Position(xShot, thirdHit.y);
+                    } else {
+                        xShot = thirdHit.x - 1;
+                        shot = new Position(xShot, thirdHit.y);
+                    }
+                    thirdHit = shot;
+                    return shot;
+
+                } else {
+                    int yShot;
+                    Position shot;
+                    int yDifference = firstHit.compareTo(thirdHit);
+                    if (yDifference < 0) {
+                        yShot = thirdHit.y + 1;
+                        shot = new Position(thirdHit.x, yShot);
+                    } else {
+                        yShot = thirdHit.y - 1;
+                        shot = new Position(thirdHit.x, yShot);
+                    }
+                    thirdHit = shot;
+                    return shot;
+                }
+            } else if (secondHit != null) {
                 if (secondHit.y == firstHit.y) {
                     int xShot;
                     Position shot;
@@ -181,7 +244,7 @@ public class R23AI implements BattleshipsPlayer {
                             shot = new Position(firstHit.x + 1, firstHit.y);
                         }
                     }
-                    secondHit = shot;
+                    thirdHit = shot;
                     return shot;
                 } else {
                     int yShot;
@@ -200,119 +263,103 @@ public class R23AI implements BattleshipsPlayer {
                             shot = new Position(firstHit.x + 1, firstHit.y);
                         }
                     }
-                    secondHit = shot;
+                    thirdHit = shot;
                     return shot;
                 }
-            } else if (!alreadyShot[firstHit.x][firstHit.y + 1]) {
-                Position shot = new Position(firstHit.x, firstHit.y + 1);
-                this.secondHit = shot;
-                return shot;
-            } else if (!alreadyShot[firstHit.x][firstHit.y - 1]) {
-                Position shot = new Position(firstHit.x, firstHit.y - 1);
-                this.secondHit = shot;
-                return shot;
-            } else if (!alreadyShot[firstHit.x + 1][firstHit.y]) {
-                Position shot = new Position(firstHit.x + 1, firstHit.y);
-                this.secondHit = shot;
-                return shot;
-            } else if (!alreadyShot[firstHit.x - 1][firstHit.y]) {
-                Position shot = new Position(firstHit.x - 1, firstHit.y);
-                this.secondHit = shot;
-                return shot;
             }
         } else if (hit && this.numberOfShips < this.numberOfShipsLastTurn) {
             hunt = false;
             secondHit = null;
-        } else if (hunt ) {
-            if (secondHit != null && firstHit.compareTo(secondHit)>1) {
-                if (secondHit.y == firstHit.y) {
-                    int xShot;
-                    Position shot;
-                    int xDifference = firstHit.compareTo(secondHit);
-                    if (xDifference < 0) {
-                        xShot = firstHit.x - 1;
-                        shot = new Position(xShot, firstHit.y);
-                    } else {
-                        xShot = firstHit.x + 1;
-                        shot = new Position(xShot, firstHit.y);
-                    }
-                    secondHit = shot;
-                    return shot;
+            thirdHit = null;
+            fourthHit = null;
+            return new Position(-1, -1);
+        }
+        if (thirdHit != null && firstHit.compareTo(secondHit) > 1) {
+            if (secondHit.y == firstHit.y) {
+                int xShot;
+                Position shot;
+                int xDifference = firstHit.compareTo(secondHit);
+                if (xDifference < 0) {
+                    xShot = firstHit.x - 1;
+                    shot = new Position(xShot, firstHit.y);
                 } else {
-                    int yShot;
-                    Position shot;
-                    int xDifference = firstHit.compareTo(secondHit);
-                    if (xDifference < 0) {
-                        yShot = secondHit.y - 1;
-                        shot = new Position(firstHit.x, yShot);
-                    } else {
-                        yShot = secondHit.x + 1;
-                        shot = new Position(firstHit.x, yShot);
-                        if (alreadyShot[shot.x][shot.y]) {
-                            shot = new Position(firstHit.x + 1, firstHit.y);
-                        }
+                    xShot = firstHit.x + 1;
+                    shot = new Position(xShot, firstHit.y);
+                }
+                fourthHit = shot;
+                return shot;
+            } else {
+                int yShot;
+                Position shot;
+                int yDifference = firstHit.compareTo(secondHit);
+                if (yDifference < 0) {
+                    yShot = secondHit.y - 1;
+                    shot = new Position(firstHit.x, yShot);
+                } else {
+                    yShot = secondHit.x + 1;
+                    shot = new Position(firstHit.x, yShot);
+                    if (alreadyShot[shot.x][shot.y]) {
+                        shot = new Position(firstHit.x + 1, firstHit.y);
                     }
-                    secondHit = shot;
-                    return shot;
+                }
+                fourthHit = shot;
+                return shot;
+            }
+        } else if (firstHit.x + 1 < sizeX && !alreadyShot[firstHit.x + 1][firstHit.y]) {
+            this.alreadyShot[firstHit.x + 1][firstHit.y] = true;
+            Position shot = new Position(firstHit.x + 1, firstHit.y);
+            secondHit = shot;
+            return shot;
+        } else if (firstHit.x - 1 >= 0 && !alreadyShot[firstHit.x - 1][firstHit.y]) {
+            this.alreadyShot[firstHit.x - 1][firstHit.y] = true;
+            Position shot = new Position(firstHit.x - 1, firstHit.y);
+            secondHit = shot;
+            return shot;
+        } else if (firstHit.y + 1 < sizeY && !alreadyShot[firstHit.x][firstHit.y + 1]) {
+            this.alreadyShot[firstHit.x][firstHit.y + 1] = true;
+            Position shot = new Position(firstHit.x, firstHit.y + 1);
+            secondHit = shot;
+            return shot;
+        } else if (firstHit.y - 1 >= 0 && !alreadyShot[firstHit.x][firstHit.y - 1]) {
+            this.alreadyShot[firstHit.x][firstHit.y - 1] = true;
+            Position shot = new Position(firstHit.x, firstHit.y - 1);
+            secondHit = shot;
+            return shot;
+        }
+
+        hunt = false;
+        return new Position(-1, -1);
+    }
+
+    private Position shoot() {
+
+        for (int i = 0; i < 150; i++) {
+            if (whichRow) {
+
+                nextY = rnd.nextInt(sizeY);
+                if (nextY % 2 == 0) {
+                    nextX = rnd.nextInt(sizeX / 2) * 2;
+
+                } else {
+                    nextX = rnd.nextInt(sizeX / 2) * 2 + 1;
+
                 }
             } else {
-                
+                nextY = rnd.nextInt(sizeY);
+                if (nextY % 2 == 0) {
+                    nextX = rnd.nextInt(sizeX / 2) * 2 + 1;
+
+                } else {
+                    nextX = rnd.nextInt(sizeX / 2) * 2;
+
+                }
             }
-            
-        }*/
-         
-        if (firstHit.x+1<sizeX && !alreadyShot[firstHit.x+1][firstHit.y]){
-            this.alreadyShot[firstHit.x+1][firstHit.y] = true;
-            Position shot = new Position(firstHit.x+1, firstHit.y);
-            return shot;
-        }else if(firstHit.x-1>=0 &&!alreadyShot[firstHit.x-1][firstHit.y] ){
-            this.alreadyShot[firstHit.x-1][firstHit.y] = true;
-            Position shot = new Position(firstHit.x-1, firstHit.y);
-            return shot;
-        }else if(firstHit.y+1<sizeY && !alreadyShot[firstHit.x][firstHit.y+1]) {
-            this.alreadyShot[firstHit.x][firstHit.y+1] = true;
-            Position shot = new Position(firstHit.x, firstHit.y+1);
-            return shot;
-        } else if(firstHit.y-1>=0 && !alreadyShot[firstHit.x][firstHit.y-1]) {
-            this.alreadyShot[firstHit.x][firstHit.y-1] = true;
-            Position shot = new Position(firstHit.x, firstHit.y-1);
-            return shot;
-        }   
-            hunt = false;
-            return new Position(-1,-1);
-    }
-    
-    private Position shoot() {
-        
-        
-        if (whichRow){
-        
-        nextY = rnd.nextInt(sizeY);
-        if (nextY %2==0){
-        nextX = rnd.nextInt(sizeX/2) *2;
-            
-        } else {
-        nextX = rnd.nextInt(sizeX/2) *2+1;  
-            
-        }  
-        } 
-        else {
-        nextY = rnd.nextInt(sizeY);
-        if (nextY %2==0){
-        nextX = rnd.nextInt(sizeX/2) *2+1;
-            
-        } else {
-        nextX = rnd.nextInt(sizeX/2) *2;
-            
+
+            if (!alreadyShot[nextX][nextY]) {
+                break;
+            }
         }
-        }
-            
-        
-        if (alreadyShot[nextX][nextY]) {
-            shoot();
-        }
-        
-        
+
         this.alreadyShot[nextX][nextY] = true;
         Position shot = new Position(nextX, nextY);
         return shot;
@@ -321,10 +368,11 @@ public class R23AI implements BattleshipsPlayer {
     @Override
     public void hitFeedBack(boolean hit, Fleet enemyShips) {
 //        this.shortestShip = enemyShips.getShip(0).size();
-       // this.numberOfShips = enemyShips.getNumberOfShips();
-        if (hit){
+        this.numberOfShips = enemyShips.getNumberOfShips();
+        if (hit) {
             this.hunt = hit;
         }
+        this.hit = hit;
     }
 
     @Override
@@ -335,11 +383,11 @@ public class R23AI implements BattleshipsPlayer {
 
     @Override
     public void startRound(int round) {
-        alreadyShot = new boolean[sizeX][sizeY];    
+        alreadyShot = new boolean[sizeX][sizeY];
         hunt = false;
         int whichRowInt = rnd.nextInt(1);
         rnd.nextInt(2);
-        if (whichRowInt == 1){
+        if (whichRowInt == 1) {
             whichRow = true;
         } else {
             whichRow = false;
