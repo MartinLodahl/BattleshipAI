@@ -186,7 +186,7 @@ public class R23AI implements BattleshipsPlayer {
                 } else {
                     int yShot;
                     Position shot;
-                    int yDifference = firstHit.compareTo(thirdHit);
+                    int yDifference = firstHit.compareTo(fourthHit);
                     if (yDifference < 0) {
                         yShot = fourthHit.y + 1;
                         shot = new Position(fourthHit.x, yShot);
