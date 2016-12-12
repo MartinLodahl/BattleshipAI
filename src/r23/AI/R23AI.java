@@ -303,6 +303,16 @@ public class R23AI implements BattleshipsPlayer {
                     xShot = firstHit.x + 1;
                     shot = new Position(xShot, firstHit.y);
                 }
+                if (alreadyShot[shot.x][shot.y]){
+                    if (firstHit.y+1 <sizeY && !alreadyShot[firstHit.x][firstHit.y+1]){
+                        shot = new Position(firstHit.x, firstHit.y+1);
+                    } else if (firstHit.y-1 >0 && !alreadyShot[firstHit.x][firstHit.y-1]){
+                        shot = new Position (firstHit.x, firstHit.y-1);
+                    } else  {
+                        return new Position(-1,-1);
+                    }
+                    
+                }
                 fourthHit = new Position(xShot, firstHit.y);
                 return shot;
             } else {
@@ -318,6 +328,16 @@ public class R23AI implements BattleshipsPlayer {
                     if (alreadyShot[shot.x][shot.y]) {
                         shot = new Position(firstHit.x + 1, firstHit.y);
                     }
+                }
+                 if (alreadyShot[shot.x][shot.y]){
+                    if (firstHit.x+1 <sizeX && !alreadyShot[firstHit.x+1][firstHit.y]){
+                        shot = new Position(firstHit.x+1, firstHit.y);
+                    } else if (firstHit.x-1 >0 && !alreadyShot[firstHit.x-1][firstHit.y]){
+                        shot = new Position (firstHit.x-1, firstHit.y);
+                    } else {
+                        return new Position (-1,-1);
+                    }
+                    
                 }
                 fourthHit = new Position(firstHit.x, yShot);
                 return shot;
