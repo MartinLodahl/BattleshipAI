@@ -44,20 +44,20 @@ public class R23AI implements BattleshipsPlayer {
 
     @Override
     public void placeShips(Fleet fleet, Board board) {
-        
+
         foundPosition = new boolean[sizeX][sizeY];
         //fleet.getNumbeOfShips retunerer antal af skiber, altså 5
-        
+
         for (int i = fleet.getNumberOfShips() - 1; i >= 0; i--) {
-            
+
             // fleet.getship(1) returnerer skibenes info
             Ship s = fleet.getShip(i);
-            
+
             boolean vertical = rnd.nextBoolean();
             Position pos;
             if (vertical) {
                 int x = rnd.nextInt(sizeX);
-                int y = rnd.nextInt(sizeY - (s.size()-1));
+                int y = rnd.nextInt(sizeY - (s.size() - 1));
 
                 while (true) {
                     boolean check = false;
@@ -65,7 +65,7 @@ public class R23AI implements BattleshipsPlayer {
                         if (foundPosition[x][y + j]) {
                             check = true;
                             x = rnd.nextInt(sizeX);
-                            y = rnd.nextInt(sizeY - (s.size()-1));
+                            y = rnd.nextInt(sizeY - (s.size() - 1));
                             break;
                         }
                     }
@@ -94,17 +94,19 @@ public class R23AI implements BattleshipsPlayer {
                 }
                 for (int j = 0; j < s.size(); j++) {
                     foundPosition[x][y + j] = true;
+//                    foundPosition[x + 1][y + j] = true;
+//                    foundPosition[x - 1][y + j] = true;
                 }
                 pos = new Position(x, y);
             } else {
-                int x = rnd.nextInt(sizeX - (s.size()-1));
+                int x = rnd.nextInt(sizeX - (s.size() - 1));
                 int y = rnd.nextInt(sizeY);
                 while (true) {
                     boolean check = false;
                     for (int j = 0; j < s.size(); j++) {
                         if (foundPosition[x + j][y]) {
                             check = true;
-                            x = rnd.nextInt(sizeX - (s.size())-1);
+                            x = rnd.nextInt(sizeX - (s.size()) - 1);
                             y = rnd.nextInt(sizeY);
                         }
                     }
@@ -133,6 +135,8 @@ public class R23AI implements BattleshipsPlayer {
                 }
                 for (int j = 0; j < s.size(); j++) {
                     foundPosition[x + j][y] = true;
+//                    foundPosition[x + j][y + 1] = true;
+//                    foundPosition[x + j][y - 1] = true;
                 }
                 pos = new Position(x, y);
             }
@@ -171,11 +175,11 @@ public class R23AI implements BattleshipsPlayer {
     }
 
     private Position huntShip() {
-        System.out.println("FirstHit:"+firstHit);
+        System.out.println("FirstHit:" + firstHit);
         System.out.println("SecondHit: " + secondHit);
-        System.out.println("ThirdHit: "+thirdHit);
-        System.out.println("FourthHit: "+fourthHit);
-        System.out.println("Hit: "+ hit);
+        System.out.println("ThirdHit: " + thirdHit);
+        System.out.println("FourthHit: " + fourthHit);
+        System.out.println("Hit: " + hit);
 
         if (hit && this.numberOfShips == this.numberOfShipsLastTurn) {
             if (fourthHit != null) {
@@ -255,6 +259,9 @@ public class R23AI implements BattleshipsPlayer {
                             shot = new Position(firstHit.x + 1, firstHit.y);
                         }
                     }
+                    if (alreadyShot[shot.x][shot.y]) {
+                        shot = new Position(-1, -1);
+                    }
                     thirdHit = shot;
                     return shot;
                 } else {
@@ -265,19 +272,19 @@ public class R23AI implements BattleshipsPlayer {
                         yShot = secondHit.y + 1;
                         shot = new Position(firstHit.x, yShot);
                         if (alreadyShot[shot.x][shot.y]) {
-                            shot = new Position(firstHit.x, yShot+1);
-                            if(alreadyShot[firstHit.x][yShot+1]){
-                                shot = new Position (-1,-1);
+                            shot = new Position(firstHit.x, yShot + 1);
+                            if (alreadyShot[firstHit.x][yShot + 1]) {
+                                shot = new Position(-1, -1);
                             }
                         }
                     } else {
                         yShot = secondHit.y - 1;
                         shot = new Position(firstHit.x, yShot);
                         if (alreadyShot[shot.x][shot.y]) {
-                            shot = new Position(firstHit.x, yShot-1);
-                            if(alreadyShot[firstHit.x][yShot-1]){
-                            shot = new Position (-1,-1);
-                        }
+                            shot = new Position(firstHit.x, yShot - 1);
+                            if (alreadyShot[firstHit.x][yShot - 1]) {
+                                shot = new Position(-1, -1);
+                            }
                         }
                     }
                     thirdHit = shot;
@@ -303,17 +310,15 @@ public class R23AI implements BattleshipsPlayer {
                     xShot = firstHit.x + 1;
                     shot = new Position(xShot, firstHit.y);
                 }
-                if (alreadyShot[shot.x][shot.y]){
-                    if (firstHit.y+1 <sizeY && !alreadyShot[firstHit.x][firstHit.y+1]){
-                        shot = new Position(firstHit.x, firstHit.y+1);
-                    } else if (firstHit.y-1 >0 && !alreadyShot[firstHit.x][firstHit.y-1]){
-                        shot = new Position (firstHit.x, firstHit.y-1);
-                    } else  {
-                        return new Position(-1,-1);
+                if (alreadyShot[shot.x][shot.y]) {
+                    if (firstHit.y + 1 < sizeY && !alreadyShot[firstHit.x][firstHit.y + 1]) {
+                        shot = new Position(firstHit.x, firstHit.y + 1);
+                    } else if (firstHit.y - 1 > 0 && !alreadyShot[firstHit.x][firstHit.y - 1]) {
+                        shot = new Position(firstHit.x, firstHit.y - 1);
+                    } else {
+                        return new Position(-1, -1);
                     }
-                    
                 }
-                
                 fourthHit = shot;
                 return shot;
             } else {
@@ -327,15 +332,15 @@ public class R23AI implements BattleshipsPlayer {
                     yShot = firstHit.x + 1;
                     shot = new Position(firstHit.x, yShot);
                 }
-                 if (alreadyShot[shot.x][shot.y]){
-                    if (firstHit.x+1 <sizeX && !alreadyShot[firstHit.x+1][firstHit.y]){
-                        shot = new Position(firstHit.x+1, firstHit.y);
-                    } else if (firstHit.x-1 >0 && !alreadyShot[firstHit.x-1][firstHit.y]){
-                        shot = new Position (firstHit.x-1, firstHit.y);
+                if (alreadyShot[shot.x][shot.y]) {
+                    if (firstHit.x + 1 < sizeX && !alreadyShot[firstHit.x + 1][firstHit.y]) {
+                        shot = new Position(firstHit.x + 1, firstHit.y);
+                    } else if (firstHit.x - 1 > 0 && !alreadyShot[firstHit.x - 1][firstHit.y]) {
+                        shot = new Position(firstHit.x - 1, firstHit.y);
                     } else {
-                        return new Position (-1,-1);
+                        return new Position(-1, -1);
                     }
-                    
+
                 }
                 fourthHit = shot;
                 return shot;
@@ -362,7 +367,6 @@ public class R23AI implements BattleshipsPlayer {
             return shot;
         }
 
-        
         return new Position(-1, -1);
     }
 
