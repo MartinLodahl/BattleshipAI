@@ -57,7 +57,7 @@ public class R23AI implements BattleshipsPlayer {
             Position pos;
             if (vertical) {
                 int x = rnd.nextInt(sizeX);
-                int y = rnd.nextInt(sizeY - (s.size()));
+                int y = rnd.nextInt(sizeY - (s.size()-1));
 
                 while (true) {
                     boolean check = false;
@@ -65,7 +65,7 @@ public class R23AI implements BattleshipsPlayer {
                         if (foundPosition[x][y + j]) {
                             check = true;
                             x = rnd.nextInt(sizeX);
-                            y = rnd.nextInt(sizeY - (s.size()));
+                            y = rnd.nextInt(sizeY - (s.size()-1));
                             break;
                         }
                     }
@@ -97,14 +97,14 @@ public class R23AI implements BattleshipsPlayer {
                 }
                 pos = new Position(x, y);
             } else {
-                int x = rnd.nextInt(sizeX - (s.size()));
+                int x = rnd.nextInt(sizeX - (s.size()-1));
                 int y = rnd.nextInt(sizeY);
                 while (true) {
                     boolean check = false;
                     for (int j = 0; j < s.size(); j++) {
                         if (foundPosition[x + j][y]) {
                             check = true;
-                            x = rnd.nextInt(sizeX - (s.size()));
+                            x = rnd.nextInt(sizeX - (s.size())-1);
                             y = rnd.nextInt(sizeY);
                         }
                     }
@@ -153,6 +153,12 @@ public class R23AI implements BattleshipsPlayer {
             Position negativeShot = new Position(-1, -1);
             if (shot.compareTo(negativeShot) != 0) {
                 return shot;
+            } else {
+                hunt = false;
+                firstHit = null;
+                secondHit = null;
+                thirdHit = null;
+                fourthHit = null;
             }
         }
 
@@ -165,6 +171,11 @@ public class R23AI implements BattleshipsPlayer {
     }
 
     private Position huntShip() {
+        System.out.println("FirstHit:"+firstHit);
+        System.out.println("SecondHit: " + secondHit);
+        System.out.println("ThirdHit: "+thirdHit);
+        System.out.println("FourthHit: "+fourthHit);
+        System.out.println("Hit: "+ hit);
 
         if (hit && this.numberOfShips == this.numberOfShipsLastTurn) {
             if (fourthHit != null) {
@@ -194,7 +205,7 @@ public class R23AI implements BattleshipsPlayer {
                         yShot = fourthHit.y - 1;
                         shot = new Position(fourthHit.x, yShot);
                     }
-                    thirdHit = shot;
+                    fourthHit = shot;
                     return shot;
                 }
             } else if (thirdHit != null) {
@@ -254,13 +265,19 @@ public class R23AI implements BattleshipsPlayer {
                         yShot = secondHit.y + 1;
                         shot = new Position(firstHit.x, yShot);
                         if (alreadyShot[shot.x][shot.y]) {
-                            shot = new Position(firstHit.x - 1, firstHit.y);
+                            shot = new Position(firstHit.x, yShot+1);
+                            if(alreadyShot[firstHit.x][yShot+1]){
+                                shot = new Position (-1,-1);
+                            }
                         }
                     } else {
-                        yShot = secondHit.x - 1;
+                        yShot = secondHit.y - 1;
                         shot = new Position(firstHit.x, yShot);
                         if (alreadyShot[shot.x][shot.y]) {
-                            shot = new Position(firstHit.x + 1, firstHit.y);
+                            shot = new Position(firstHit.x, yShot-1);
+                            if(alreadyShot[firstHit.x][yShot-1]){
+                            shot = new Position (-1,-1);
+                        }
                         }
                     }
                     thirdHit = shot;
@@ -274,7 +291,7 @@ public class R23AI implements BattleshipsPlayer {
             fourthHit = null;
             return new Position(-1, -1);
         }
-        if (thirdHit != null && firstHit.compareTo(secondHit) > 1) {
+        if (thirdHit != null) {
             if (secondHit.y == firstHit.y) {
                 int xShot;
                 Position shot;
@@ -286,23 +303,23 @@ public class R23AI implements BattleshipsPlayer {
                     xShot = firstHit.x + 1;
                     shot = new Position(xShot, firstHit.y);
                 }
-                fourthHit = shot;
+                fourthHit = new Position(xShot, firstHit.y);
                 return shot;
             } else {
                 int yShot;
                 Position shot;
                 int yDifference = firstHit.compareTo(secondHit);
                 if (yDifference < 0) {
-                    yShot = secondHit.y - 1;
+                    yShot = firstHit.y - 1;
                     shot = new Position(firstHit.x, yShot);
                 } else {
-                    yShot = secondHit.x + 1;
+                    yShot = firstHit.x + 1;
                     shot = new Position(firstHit.x, yShot);
                     if (alreadyShot[shot.x][shot.y]) {
                         shot = new Position(firstHit.x + 1, firstHit.y);
                     }
                 }
-                fourthHit = shot;
+                fourthHit = new Position(firstHit.x, yShot);
                 return shot;
             }
         } else if (firstHit.x + 1 < sizeX && !alreadyShot[firstHit.x + 1][firstHit.y]) {
@@ -327,7 +344,7 @@ public class R23AI implements BattleshipsPlayer {
             return shot;
         }
 
-        hunt = false;
+        
         return new Position(-1, -1);
     }
 
@@ -385,6 +402,10 @@ public class R23AI implements BattleshipsPlayer {
     public void startRound(int round) {
         alreadyShot = new boolean[sizeX][sizeY];
         hunt = false;
+        firstHit = null;
+        secondHit = null;
+        thirdHit = null;
+        fourthHit = null;
         int whichRowInt = rnd.nextInt(1);
         rnd.nextInt(2);
         if (whichRowInt == 1) {
