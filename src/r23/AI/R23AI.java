@@ -313,7 +313,8 @@ public class R23AI implements BattleshipsPlayer {
                     }
                     
                 }
-                fourthHit = new Position(xShot, firstHit.y);
+                
+                fourthHit = shot;
                 return shot;
             } else {
                 int yShot;
@@ -325,9 +326,6 @@ public class R23AI implements BattleshipsPlayer {
                 } else {
                     yShot = firstHit.x + 1;
                     shot = new Position(firstHit.x, yShot);
-                    if (alreadyShot[shot.x][shot.y]) {
-                        shot = new Position(firstHit.x + 1, firstHit.y);
-                    }
                 }
                  if (alreadyShot[shot.x][shot.y]){
                     if (firstHit.x+1 <sizeX && !alreadyShot[firstHit.x+1][firstHit.y]){
@@ -339,7 +337,7 @@ public class R23AI implements BattleshipsPlayer {
                     }
                     
                 }
-                fourthHit = new Position(firstHit.x, yShot);
+                fourthHit = shot;
                 return shot;
             }
         } else if (firstHit.x + 1 < sizeX && !alreadyShot[firstHit.x + 1][firstHit.y]) {
