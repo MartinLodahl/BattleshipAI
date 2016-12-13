@@ -38,41 +38,166 @@ public class R23AI implements BattleshipsPlayer {
     private int numberOfShipsLastTurn;
     private int numberOfShips;
 
+    private int enemyPointsVsConfusion;
+    private int counter;
+    private int keepIt;
+    private Position firstShipPlaced;
+    private boolean firstShipVertical;
+    private boolean confusionUsed;
+    
+    private int middleShotsThisTurn;
+    private int middleShots;
+    private int ourPointsAvg;
+    private int ourPointsWithMiddle;
+    private boolean middleStrat;
+    
+    
+
     public R23AI() {
 
     }
+//8*6
 
     @Override
     public void placeShips(Fleet fleet, Board board) {
-
         foundPosition = new boolean[sizeX][sizeY];
-        //fleet.getNumbeOfShips retunerer antal af skiber, altså 5
+        int x;
+        int y;
+        confusionUsed = false;
+        if (counter < 10 || keepIt <= 50) {
+            confusionUsed = true;
+            for (int i = fleet.getNumberOfShips() - 1; i >= 0; i--) {
+                Ship s = fleet.getShip(i);
+                Position pos;
 
-        for (int i = fleet.getNumberOfShips() - 1; i >= 0; i--) {
-
-            // fleet.getship(1) returnerer skibenes info
-            Ship s = fleet.getShip(i);
-
-            boolean vertical = rnd.nextBoolean();
-            Position pos;
-            if (vertical) {
-                int x = rnd.nextInt(sizeX);
-                int y = rnd.nextInt(sizeY - (s.size() - 1));
-
-                while (true) {
-                    boolean check = false;
+                if (i == fleet.getNumberOfShips() - 2 && firstShipVertical) {
+                    x = firstShipPlaced.x + 1;
+                    y = firstShipPlaced.y + 3;
+                    pos = new Position(x, y);
                     for (int j = 0; j < s.size(); j++) {
-                        if (foundPosition[x][y + j]) {
-                            check = true;
-                            x = rnd.nextInt(sizeX);
-                            y = rnd.nextInt(sizeY - (s.size() - 1));
+                        foundPosition[x + j][y] = true;
+                    }
+                    board.placeShip(pos, s, false);
+                    //Skal ligges horizontal
+                } else if (i == fleet.getNumberOfShips() - 3 && firstShipVertical) {
+                    x = firstShipPlaced.x - 3;
+                    y = firstShipPlaced.y + 1;
+                    pos = new Position(x, y);
+                    for (int j = 0; j < s.size(); j++) {
+                        foundPosition[x + j][y] = true;
+                    }
+                    board.placeShip(pos, s, false);
+                } else if (i == fleet.getNumberOfShips() - 2 && !firstShipVertical) {
+                    x = firstShipPlaced.x + 3;
+                    y = firstShipPlaced.y + 1;
+                    pos = new Position(x, y);
+                    for (int j = 0; j < s.size(); j++) {
+                        foundPosition[x][y + j] = true;
+                    }
+                    board.placeShip(pos, s, true);
+                } else if (i == fleet.getNumberOfShips() - 3 && !firstShipVertical) {
+                    x = firstShipPlaced.x + 1;
+                    y = firstShipPlaced.y - 3;
+                    pos = new Position(x, y);
+                    for (int j = 0; j < s.size(); j++) {
+                        foundPosition[x][y + j] = true;
+                    }
+                    board.placeShip(pos, s, true);
+                }
+                boolean vertical = rnd.nextBoolean();
+
+                if (i == fleet.getNumberOfShips() - 1) {
+                    if (vertical) {
+                        x = rnd.nextInt(sizeX - 8) + 3;
+                        y = rnd.nextInt(sizeY - (s.size() - 1));
+                        pos = new Position(x, y);
+                    } else {
+                        x = rnd.nextInt(sizeX - (s.size() - 1));
+                        y = rnd.nextInt(sizeY - 8) + 3;
+                        pos = new Position(x, y);
+                    }
+
+                    firstShipPlaced = pos;
+                    firstShipVertical = vertical;
+                    for (int j = 0; j < s.size(); j++) {
+                        foundPosition[x][y + j] = true;
+                    }
+                    board.placeShip(pos, s, vertical);
+                }
+                if (vertical) {
+                    x = rnd.nextInt(sizeX);
+                    y = rnd.nextInt(sizeY - (s.size() - 1));
+
+                    while (true) {
+                        boolean check = false;
+                        for (int j = 0; j < s.size(); j++) {
+                            if (foundPosition[x][y + j]) {
+                                check = true;
+                                x = rnd.nextInt(sizeX);
+                                y = rnd.nextInt(sizeY - (s.size() - 1));
+                                break;
+                            }
+                        }
+                        if (check == false) {
                             break;
                         }
                     }
-                    if (check == false) {
-                        break;
+                    for (int j = 0; j < s.size(); j++) {
+                        foundPosition[x][y + j] = true;
                     }
-                    /*   int counter = 0;
+                    pos = new Position(x, y);
+                } else {
+                    x = rnd.nextInt(sizeX - (s.size() - 1));
+                    y = rnd.nextInt(sizeY);
+                    while (true) {
+                        boolean check = false;
+                        for (int j = 0; j < s.size(); j++) {
+                            if (foundPosition[x + j][y]) {
+                                check = true;
+                                x = rnd.nextInt(sizeX - (s.size()) - 1);
+                                y = rnd.nextInt(sizeY);
+                            }
+                        }
+                        if (check == false) {
+                            break;
+                        }
+                    }
+                    for (int j = 0; j < s.size(); j++) {
+                        foundPosition[x + j][y] = true;
+                    }
+                    pos = new Position(x, y);
+                }
+                board.placeShip(pos, s, vertical);
+            }
+        } else {
+
+            //fleet.getNumbeOfShips retunerer antal af skiber, altså 5
+            for (int i = fleet.getNumberOfShips() - 1;
+                    i >= 0; i--) {
+
+                // fleet.getship(1) returnerer skibenes info
+                Ship s = fleet.getShip(i);
+
+                boolean vertical = rnd.nextBoolean();
+                Position pos;
+                if (vertical) {
+                    x = rnd.nextInt(sizeX);
+                    y = rnd.nextInt(sizeY - (s.size() - 1));
+
+                    while (true) {
+                        boolean check = false;
+                        for (int j = 0; j < s.size(); j++) {
+                            if (foundPosition[x][y + j]) {
+                                check = true;
+                                x = rnd.nextInt(sizeX);
+                                y = rnd.nextInt(sizeY - (s.size() - 1));
+                                break;
+                            }
+                        }
+                        if (check == false) {
+                            break;
+                        }
+                        /*   int counter = 0;
                     if (counter > 1) {
                         y = rnd.nextInt(sizeY - (s.size()));
                     }
@@ -91,29 +216,29 @@ public class R23AI implements BattleshipsPlayer {
                     }
                     counter++;
                 }*/
-                }
-                for (int j = 0; j < s.size(); j++) {
-                    foundPosition[x][y + j] = true;
+                    }
+                    for (int j = 0; j < s.size(); j++) {
+                        foundPosition[x][y + j] = true;
 //                    foundPosition[x + 1][y + j] = true;
 //                    foundPosition[x - 1][y + j] = true;
-                }
-                pos = new Position(x, y);
-            } else {
-                int x = rnd.nextInt(sizeX - (s.size() - 1));
-                int y = rnd.nextInt(sizeY);
-                while (true) {
-                    boolean check = false;
-                    for (int j = 0; j < s.size(); j++) {
-                        if (foundPosition[x + j][y]) {
-                            check = true;
-                            x = rnd.nextInt(sizeX - (s.size()) - 1);
-                            y = rnd.nextInt(sizeY);
+                    }
+                    pos = new Position(x, y);
+                } else {
+                    x = rnd.nextInt(sizeX - (s.size() - 1));
+                    y = rnd.nextInt(sizeY);
+                    while (true) {
+                        boolean check = false;
+                        for (int j = 0; j < s.size(); j++) {
+                            if (foundPosition[x + j][y]) {
+                                check = true;
+                                x = rnd.nextInt(sizeX - (s.size()) - 1);
+                                y = rnd.nextInt(sizeY);
+                            }
                         }
-                    }
-                    if (check == false) {
-                        break;
-                    }
-                    /*int counter = 0;
+                        if (check == false) {
+                            break;
+                        }
+                        /*int counter = 0;
                     if (counter > 1) {
                         x = rnd.nextInt(sizeX - (s.size() - 1));
                     }
@@ -132,15 +257,16 @@ public class R23AI implements BattleshipsPlayer {
                     }
                     counter++;
                 }*/
-                }
-                for (int j = 0; j < s.size(); j++) {
-                    foundPosition[x + j][y] = true;
+                    }
+                    for (int j = 0; j < s.size(); j++) {
+                        foundPosition[x + j][y] = true;
 //                    foundPosition[x + j][y + 1] = true;
 //                    foundPosition[x + j][y - 1] = true;
+                    }
+                    pos = new Position(x, y);
                 }
-                pos = new Position(x, y);
+                board.placeShip(pos, s, vertical);
             }
-            board.placeShip(pos, s, vertical);
         }
     }
 
@@ -151,9 +277,9 @@ public class R23AI implements BattleshipsPlayer {
 
     @Override
     public Position getFireCoordinates(Fleet enemyShips) {
-
+        Position shot;
         if (hunt) {
-            Position shot = huntShip();
+            shot = huntShip();
             Position negativeShot = new Position(-1, -1);
             if (shot.compareTo(negativeShot) != 0) {
                 return shot;
@@ -165,8 +291,13 @@ public class R23AI implements BattleshipsPlayer {
                 fourthHit = null;
             }
         }
-
-        Position shot = shoot();
+        if (ourPointsAvg >= 50 && middleShotsThisTurn >= 14 || middleShots<10) {
+            shot = middleShootStrat();
+            middleStrat = true;
+            middleShotsThisTurn ++;
+        } else {
+            shot = shoot();
+        }
 
         firstHit = shot;
         this.numberOfShipsLastTurn = this.numberOfShips;
@@ -370,6 +501,33 @@ public class R23AI implements BattleshipsPlayer {
         return new Position(-1, -1);
     }
 
+    private Position middleShootStrat() {
+        //4,4 og 5,5 whichRow == true;
+        
+        if(whichRow){
+            if (nextX == 0 && nextY == 0){
+                nextX = sizeX/2;
+                nextY = sizeY/2;
+            } else {
+                nextX++;
+                nextY++;
+                if (nextX >= sizeX -2){
+                    nextX = 2;
+                    nextY = 2;
+                }
+                if (nextX == sizeX/2 && nextY == sizeY/2){
+                    nextY++;
+                    nextX-=3;               
+                }
+                if (nextY >= sizeY){
+                    nextY-=10;
+                    nextX-=2;
+                }
+            }
+        }
+        return new Position(nextX, nextY);
+    }
+    
     private Position shoot() {
 
         for (int i = 0; i < 150; i++) {
@@ -418,12 +576,15 @@ public class R23AI implements BattleshipsPlayer {
     public void startMatch(int rounds, Fleet ships, int sizeX, int sizeY) {
         this.sizeX = sizeX;
         this.sizeY = sizeY;
+        counter = 0;
     }
 
     @Override
     public void startRound(int round) {
         alreadyShot = new boolean[sizeX][sizeY];
         hunt = false;
+        nextX = 0;
+        nextY = 0;
         firstHit = null;
         secondHit = null;
         thirdHit = null;
@@ -439,11 +600,26 @@ public class R23AI implements BattleshipsPlayer {
 
     @Override
     public void endRound(int round, int points, int enemyPoints) {
-        //Do nothing
+        if (confusionUsed) {
+            this.enemyPointsVsConfusion += enemyPoints;
+            counter++;
+            keepIt = enemyPointsVsConfusion / counter;
+        }
+        System.out.println("enemyPoints : " + enemyPoints);
+        System.out.println("keepIt: " + keepIt);
+        System.out.println("Counter: " + counter);
+        if(middleStrat){
+            this.ourPointsWithMiddle += points;
+            middleShots++;
+            this.ourPointsAvg = ourPointsWithMiddle/middleShots;
+            middleStrat = false;
+        }
     }
 
     @Override
     public void endMatch(int won, int lost, int draw) {
         //Do nothing
     }
+
+    
 }
