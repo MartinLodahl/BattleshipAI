@@ -45,14 +45,12 @@ public class R23AI implements BattleshipsPlayer {
     private Position firstShipPlaced;
     private boolean firstShipVertical;
     private boolean confusionUsed;
-    
+
     private int middleShotsThisTurn;
     private int middleShots;
     private int ourPointsAvg;
     private int ourPointsWithMiddle;
     private boolean middleStrat;
-    
-    
 
     public R23AI() {
 
@@ -111,17 +109,21 @@ public class R23AI implements BattleshipsPlayer {
                         x = rnd.nextInt(sizeX - 8) + 3;
                         y = rnd.nextInt(sizeY - (s.size() - 1));
                         pos = new Position(x, y);
+                        for (int j = 0; j < s.size(); j++) {
+                            foundPosition[x][y + j] = true;
+                        }
                     } else {
                         x = rnd.nextInt(sizeX - (s.size() - 1));
                         y = rnd.nextInt(sizeY - 8) + 3;
                         pos = new Position(x, y);
+                        for (int j = 0; j < s.size(); j++) {
+                            foundPosition[x + j][y] = true;
+                        }
                     }
 
                     firstShipPlaced = pos;
                     firstShipVertical = vertical;
-                    for (int j = 0; j < s.size(); j++) {
-                        foundPosition[x][y + j] = true;
-                    }
+
                     board.placeShip(pos, s, vertical);
                 }
                 if (vertical) {
@@ -291,10 +293,10 @@ public class R23AI implements BattleshipsPlayer {
                 fourthHit = null;
             }
         }
-        if (ourPointsAvg >= 50 && middleShotsThisTurn <= 14 || middleShots<10 && middleShotsThisTurn <= 14) {
+        if (ourPointsAvg >= 50 && middleShotsThisTurn <= 14 || middleShots < 10 && middleShotsThisTurn <= 14) {
             shot = middleShootStrat();
             middleStrat = true;
-            middleShotsThisTurn ++;
+            middleShotsThisTurn++;
         } else {
             shot = shoot();
         }
@@ -506,52 +508,50 @@ public class R23AI implements BattleshipsPlayer {
     private Position middleShootStrat() {
         //4,4 og 5,5 whichRow == true;
         System.out.println("WhichRow :" + whichRow);
-        if(whichRow){
-            if (nextX == 0 && nextY == 0){
-                nextX = sizeX/2;
-                nextY = sizeY/2;
+        if (whichRow) {
+            if (nextX == 0 && nextY == 0) {
+                nextX = sizeX / 2;
+                nextY = sizeY / 2;
             } else {
                 nextX++;
                 nextY++;
-                if (nextX >= sizeX -2){
+                if (nextX >= sizeX - 2) {
                     nextX = 2;
                     nextY = 2;
                 }
-                if (nextX == sizeX/2 && nextY == sizeY/2){
+                if (nextX == sizeX / 2 && nextY == sizeY / 2) {
                     nextY++;
-                    nextX-=3;               
+                    nextX -= 3;
                 }
-                if (nextY >= sizeY){
-                    nextY-=sizeY;
-                    nextX-=sizeX/5;
+                if (nextY >= sizeY) {
+                    nextY -= sizeY;
+                    nextX -= sizeX / 5;
                 }
             }
-        } else{
-          if (nextX == 0 && nextY == 0){
-                nextX = sizeX/2-1;
-                nextY = sizeY/2;
-            } else {
-                nextX--;
+        } else if (nextX == 0 && nextY == 0) {
+            nextX = sizeX / 2 - 1;
+            nextY = sizeY / 2;
+        } else {
+            nextX--;
+            nextY++;
+            if (nextX <= 1) {
+                nextY = 2;
+                nextX = sizeX - 3;
+            }
+            if (nextX == sizeX / 2 - 1 && nextY == sizeY / 2) {
                 nextY++;
-                if (nextX <= 1){
-                    nextY=2;
-                    nextX= sizeX -3;  
-                }
-                if (nextX == sizeX/2-1 && nextY == sizeY/2){
-                    nextY++;
-                    nextX+=3;             
-                }
-                if (nextY >= sizeY){
-                    nextY-=sizeY;
-                    nextX+=sizeX/5;
-                }
-            }  
+                nextX += 3;
+            }
+            if (nextY >= sizeY) {
+                nextY -= sizeY;
+                nextX += sizeX / 5;
+            }
         }
         this.alreadyShot[nextX][nextY] = true;
         Position shot = new Position(nextX, nextY);
         return shot;
     }
-    
+
     private Position shoot() {
 
         for (int i = 0; i < 150; i++) {
@@ -580,10 +580,10 @@ public class R23AI implements BattleshipsPlayer {
                 break;
             }
         }
-        if (alreadyShot[nextX][nextY]){
-            if (whichRow){
+        if (alreadyShot[nextX][nextY]) {
+            if (whichRow) {
                 whichRow = false;
-            }else {
+            } else {
                 whichRow = true;
             }
         }
@@ -631,10 +631,10 @@ public class R23AI implements BattleshipsPlayer {
             counter++;
             keepIt = enemyPointsVsConfusion / counter;
         }
-        if(middleStrat){
+        if (middleStrat) {
             this.ourPointsWithMiddle += points;
             middleShots++;
-            this.ourPointsAvg = ourPointsWithMiddle/middleShots;
+            this.ourPointsAvg = ourPointsWithMiddle / middleShots;
             middleStrat = false;
         }
     }
@@ -644,5 +644,4 @@ public class R23AI implements BattleshipsPlayer {
         //Do nothing
     }
 
-    
 }
