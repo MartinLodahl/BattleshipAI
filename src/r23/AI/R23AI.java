@@ -56,7 +56,6 @@ public class R23AI implements BattleshipsPlayer {
     public R23AI() {
 
     }
-//8*6
 
     @Override
     public void placeShips(Fleet fleet, Board board) {
@@ -291,7 +290,7 @@ public class R23AI implements BattleshipsPlayer {
                 fourthHit = null;
             }
         }
-        if (ourPointsAvg >= 50 && middleShotsThisTurn >= 14 || middleShots<10) {
+        if (ourPointsAvg >= 50 && middleShotsThisTurn <= 14 || middleShots<10 && middleShotsThisTurn <= 14) {
             shot = middleShootStrat();
             middleStrat = true;
             middleShotsThisTurn ++;
@@ -301,16 +300,10 @@ public class R23AI implements BattleshipsPlayer {
 
         firstHit = shot;
         this.numberOfShipsLastTurn = this.numberOfShips;
-
         return shot;
     }
 
     private Position huntShip() {
-        System.out.println("FirstHit:" + firstHit);
-        System.out.println("SecondHit: " + secondHit);
-        System.out.println("ThirdHit: " + thirdHit);
-        System.out.println("FourthHit: " + fourthHit);
-        System.out.println("Hit: " + hit);
 
         if (hit && this.numberOfShips == this.numberOfShipsLastTurn) {
             if (fourthHit != null) {
@@ -326,6 +319,7 @@ public class R23AI implements BattleshipsPlayer {
                         xShot = fourthHit.x - 1;
                         shot = new Position(xShot, fourthHit.y);
                     }
+                    this.alreadyShot[shot.x][shot.y] = true;
                     fourthHit = shot;
                     return shot;
 
@@ -340,6 +334,7 @@ public class R23AI implements BattleshipsPlayer {
                         yShot = fourthHit.y - 1;
                         shot = new Position(fourthHit.x, yShot);
                     }
+                    this.alreadyShot[shot.x][shot.y] = true;
                     fourthHit = shot;
                     return shot;
                 }
@@ -355,6 +350,7 @@ public class R23AI implements BattleshipsPlayer {
                         xShot = thirdHit.x - 1;
                         shot = new Position(xShot, thirdHit.y);
                     }
+                    this.alreadyShot[shot.x][shot.y] = true;
                     thirdHit = shot;
                     return shot;
 
@@ -369,6 +365,7 @@ public class R23AI implements BattleshipsPlayer {
                         yShot = thirdHit.y - 1;
                         shot = new Position(thirdHit.x, yShot);
                     }
+                    this.alreadyShot[shot.x][shot.y] = true;
                     thirdHit = shot;
                     return shot;
                 }
@@ -393,6 +390,7 @@ public class R23AI implements BattleshipsPlayer {
                     if (alreadyShot[shot.x][shot.y]) {
                         shot = new Position(-1, -1);
                     }
+                    this.alreadyShot[shot.x][shot.y] = true;
                     thirdHit = shot;
                     return shot;
                 } else {
@@ -418,6 +416,7 @@ public class R23AI implements BattleshipsPlayer {
                             }
                         }
                     }
+                    this.alreadyShot[shot.x][shot.y] = true;
                     thirdHit = shot;
                     return shot;
                 }
@@ -450,6 +449,7 @@ public class R23AI implements BattleshipsPlayer {
                         return new Position(-1, -1);
                     }
                 }
+                this.alreadyShot[shot.x][shot.y] = true;
                 fourthHit = shot;
                 return shot;
             } else {
@@ -473,6 +473,7 @@ public class R23AI implements BattleshipsPlayer {
                     }
 
                 }
+                this.alreadyShot[shot.x][shot.y] = true;
                 fourthHit = shot;
                 return shot;
             }
@@ -503,7 +504,7 @@ public class R23AI implements BattleshipsPlayer {
 
     private Position middleShootStrat() {
         //4,4 og 5,5 whichRow == true;
-        
+        System.out.println("WhichRow :" + whichRow);
         if(whichRow){
             if (nextX == 0 && nextY == 0){
                 nextX = sizeX/2;
@@ -520,12 +521,34 @@ public class R23AI implements BattleshipsPlayer {
                     nextX-=3;               
                 }
                 if (nextY >= sizeY){
-                    nextY-=10;
-                    nextX-=2;
+                    nextY-=sizeY;
+                    nextX-=sizeX/5;
                 }
             }
+        } else{
+          if (nextX == 0 && nextY == 0){
+                nextX = sizeX/2-1;
+                nextY = sizeY/2;
+            } else {
+                nextX--;
+                nextY++;
+                if (nextX <= 1){
+                    nextY=2;
+                    nextX= sizeX -3;  
+                }
+                if (nextX == sizeX/2-1 && nextY == sizeY/2){
+                    nextY++;
+                    nextX+=3;             
+                }
+                if (nextY >= sizeY){
+                    nextY-=sizeY;
+                    nextX+=sizeX/5;
+                }
+            }  
         }
-        return new Position(nextX, nextY);
+        this.alreadyShot[nextX][nextY] = true;
+        Position shot = new Position(nextX, nextY);
+        return shot;
     }
     
     private Position shoot() {
@@ -554,6 +577,13 @@ public class R23AI implements BattleshipsPlayer {
 
             if (!alreadyShot[nextX][nextY]) {
                 break;
+            }
+        }
+        if (alreadyShot[nextX][nextY]){
+            if (whichRow){
+                whichRow = false;
+            }else {
+                whichRow = true;
             }
         }
 
@@ -590,12 +620,7 @@ public class R23AI implements BattleshipsPlayer {
         thirdHit = null;
         fourthHit = null;
         int whichRowInt = rnd.nextInt(1);
-        rnd.nextInt(2);
-        if (whichRowInt == 1) {
-            whichRow = true;
-        } else {
-            whichRow = false;
-        }
+        whichRow = rnd.nextBoolean();
     }
 
     @Override
@@ -605,9 +630,6 @@ public class R23AI implements BattleshipsPlayer {
             counter++;
             keepIt = enemyPointsVsConfusion / counter;
         }
-        System.out.println("enemyPoints : " + enemyPoints);
-        System.out.println("keepIt: " + keepIt);
-        System.out.println("Counter: " + counter);
         if(middleStrat){
             this.ourPointsWithMiddle += points;
             middleShots++;
