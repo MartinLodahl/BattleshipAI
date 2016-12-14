@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+//v14/12-11.30
 package r23.AI;
 
 import battleship.interfaces.BattleshipsPlayer;
